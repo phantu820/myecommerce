@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const stripe = require('stripe')("sk_test_51OMrBNCarYPlPvSfJEKXRWBQGIpA34ed2dwofwY4oDwr98CeslepY8Uv3EbwYdn6loadXXGmYSfsatl8hCqVpqND00yF6J2aQt");
 require('./connection');
 const http = require('http');
 const server = http.createServer(app);
@@ -23,7 +24,7 @@ app.post('/create-payment', async (req, res) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
-      currency: 'vnd',
+      currency: 'usd',
       payment_method_types: ['card']
     });
     res.status(200).json(paymentIntent)

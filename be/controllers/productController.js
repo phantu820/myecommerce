@@ -14,8 +14,8 @@ async function getProductById(req, res) {
     const { id } = req.params;
     try {
         const product = await Product.findById(id);
-        const similarProduct = await Product.find({ category: product.category }).limit(5);
-        res.status(200).json({ product, similarProduct });
+        const similar = await Product.find({ category: product.category }).limit(5);
+        res.status(200).json({ product, similar });
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -24,9 +24,9 @@ async function getProductById(req, res) {
 async function createProduct(req, res) {
     try {
         const { name, description, price, category, images: pictures } = req.body;
-        const product = Product.create({ name, description, price, category, pictures });
-        const listProduct = Product.find();
-        res.status(200).json(listProduct);
+        const product = await Product.create({ name, description, price, category, pictures });
+        const products = await Product.find();
+        res.status(201).json(products);
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -36,9 +36,9 @@ async function updateProduct(req, res) {
     const { id } = req.params;
     try {
         const { name, description, price, category, images: pictures } = req.body;
-        const product = Product.findByIdAndUpdate(id, { name, description, price, category, pictures });
-        const listProduct = Product.find();
-        res.status(200).json(listProduct);
+        const product = await Product.findByIdAndUpdate(id, { name, description, price, category, pictures });
+        const products = await Product.find();
+        res.status(200).json(products);
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -46,13 +46,13 @@ async function updateProduct(req, res) {
 
 async function deleteProduct(req, res) {
     const { id } = req.params;
+    const { user_id } = req.body;
     try {
-        const { user_id } = req.body;
-        const user = await User.findById(id);
-        if (!user.isAdmin) return res.status(403).json("You don't have permission to delete this product");
-        const product = Product.findByIdAndDelete(id);
-        const listProduct = Product.find();
-        res.status(200).json(listProduct);
+        const user = await User.findById(user_id);
+        if (!user.isAdmin) return res.status(401).json("You don't have permission");
+        await Product.findByIdAndDelete(id);
+        const products = await Product.find();
+        res.status(200).json(products);
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -76,7 +76,7 @@ async function filterByCategory(req, res) {
 async function addtoCart(req, res) {
     const { userId, productId, price } = req.body;
     try {
-        const user = User.findById(userId);
+        const user = await User.findById(userId);
         const cart = user.cart;
         if (user.cart[productId]) {
             cart[productId] += 1;
@@ -84,10 +84,10 @@ async function addtoCart(req, res) {
             cart[productId] = 1;
         }
         cart.count += 1;
-        cart.total = Number(cart.count) + Number(price);
+        cart.total = Number(cart.total) + Number(price);
         user.cart = cart;
         user.markModified("cart");
-        user.save();
+        await user.save();
         res.status(200).json(user);
     } catch (e) {
         res.status(400).send(e.message);

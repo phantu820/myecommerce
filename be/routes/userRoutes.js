@@ -5,5 +5,7 @@ const userController = require("../controllers/userController");
 router.post('/signup', userController.signup);
 router.post('/login', userController.login);
 router.get('/', userController.getUsers);
+router.get("/:id/orders", userController.getUserOrders);
+router.post("/:id/updateNotifications", userController.updateNotifications);
 
 module.exports = router;

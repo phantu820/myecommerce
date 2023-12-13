@@ -2,7 +2,7 @@ const router = require("express").Router();
 const productController = require("../controllers/productController");
 
 router.get("/", productController.getAllProduct);
-router.get(":id", productController.getProductById);
+router.get("/:id", productController.getProductById);
 router.post("/", productController.createProduct);
 router.patch("/:id", productController.updateProduct);
 router.delete("/", productController.deleteProduct);

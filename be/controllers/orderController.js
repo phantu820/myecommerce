@@ -1,13 +1,14 @@
 const Order = require("../models/Order");
+const User = require("../models/User");
 
 async function getAllOrders(req, res) {
     try {
-        const allOrders = await Order.find().populate({
+        const orders = await Order.find().populate({
             path: "owner",
             select: ["name", "email"],
             model: "User"
         });
-        res.status(200).json(allOrders);
+        res.status(200).json(orders);
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -49,7 +50,7 @@ async function orderShipping(req, res) {
         await user.save();
         res.status(200).json(orders)
     } catch (e) {
-        res.status(400).json(e.message);
+        res.status(500).json(e.message);
     }
 }
 

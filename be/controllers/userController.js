@@ -23,8 +23,8 @@ async function login(req, res) {
 
 async function getUsers(req, res) {
     try {
-        const getUsers = await User.find({ isAdmin: false }).populate("orders");
-        res.status(200).json(getUsers);
+        const users = await User.find({ isAdmin: false }).populate("orders");
+        res.status(200).json(users);
     } catch (error) {
         res.status(404).send(error.message);
     }
@@ -33,8 +33,8 @@ async function getUsers(req, res) {
 async function getUserOrders(req, res) {
     const { id } = req.params;
     try {
-        const getUserOrders = await User.findById(id).populate("orders");
-        res.status(200).json(getUserOrders);
+        const user = await User.findById(id).populate("orders");
+        res.status(200).json(user.orders);
     } catch (error) {
         res.status(400).send(error.message);
     }
