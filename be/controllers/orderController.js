@@ -3,14 +3,10 @@ const User = require("../models/User");
 
 async function getAllOrders(req, res) {
     try {
-        const orders = await Order.find().populate({
-            path: "owner",
-            select: ["name", "email"],
-            model: "User"
-        });
+        const orders = await Order.find().populate('owner', ['email', 'name']);
         res.status(200).json(orders);
     } catch (e) {
-        res.status(400).send(e.message);
+        res.status(400).json(e.message)
     }
 }
 
@@ -50,7 +46,7 @@ async function orderShipping(req, res) {
         await user.save();
         res.status(200).json(orders)
     } catch (e) {
-        res.status(500).json(e.message);
+        res.status(400).json(e.message);
     }
 }
 
