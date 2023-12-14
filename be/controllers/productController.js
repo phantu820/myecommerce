@@ -3,8 +3,9 @@ const User = require("../models/User");
 
 async function getAllProduct(req, res) {
     try {
-        const product = await Product.find().sort({ '_id': -1 });
-        res.status(201).json(product);
+        const sort = { '_id': -1 }
+        const products = await Product.find().sort(sort);
+        res.status(200).json(products);
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -15,7 +16,7 @@ async function getProductById(req, res) {
     try {
         const product = await Product.findById(id);
         const similar = await Product.find({ category: product.category }).limit(5);
-        res.status(200).json({ product, similar });
+        res.status(200).json({ product, similar })
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -61,13 +62,14 @@ async function deleteProduct(req, res) {
 async function filterByCategory(req, res) {
     const { category } = req.params;
     try {
-        let product;
+        let products;
+        const sort = { '_id': -1 }
         if (category == "all") {
-            product = await Product.find().sort({ "_id": 1 });
+            products = await Product.find().sort(sort);
         } else {
-            product = await Product.find({ category }).sort({ "_id": -1 });
+            products = await Product.find({ category }).sort(sort)
         }
-        res.status(200).json(product);
+        res.status(200).json(products)
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -75,18 +77,19 @@ async function filterByCategory(req, res) {
 
 async function addtoCart(req, res) {
     const { userId, productId, price } = req.body;
+
     try {
         const user = await User.findById(userId);
-        const cart = user.cart;
+        const userCart = user.cart;
         if (user.cart[productId]) {
-            cart[productId] += 1;
+            userCart[productId] += 1;
         } else {
-            cart[productId] = 1;
+            userCart[productId] = 1;
         }
-        cart.count += 1;
-        cart.total = Number(cart.total) + Number(price);
-        user.cart = cart;
-        user.markModified("cart");
+        userCart.count += 1;
+        userCart.total = Number(userCart.total) + Number(price);
+        user.cart = userCart;
+        user.markModified('cart');
         await user.save();
         res.status(200).json(user);
     } catch (e) {
