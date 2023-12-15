@@ -3,6 +3,7 @@ const orderController = require("../controllers/orderController");
 
 router.get("/", orderController.getAllOrders)
 router.post("/", orderController.createOrder);
-router.patch("/:id/shipping-status", orderController.orderShipping);
+router.patch("/:id/mark-shipped", orderController.orderShipping);
 
 module.exports = router;
+
